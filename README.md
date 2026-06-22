@@ -25,15 +25,15 @@ A web-based patient management system for pathology labs that uses AI to automat
 
 ## Objectives
 - Design and develop a web-based patient management system tailored for pathology labs
-- Integrate an AI service that automatically extracts all test parameters from uploaded PDF lab reports without any manual input
-- Present extracted data through interactive visual graphs and trend charts on a patient dashboard
+- Integrate AI to automatically extract test parameters from uploaded PDF lab reports
+- Present extracted data through interactive visual graphs on a patient dashboard
 - Implement secure role-based authentication for Admin and Doctor user roles
-- Deploy the complete system on cloud infrastructure accessible from any device and browser
+- Deploy the complete system on cloud infrastructure
 
 ---
 
 ## Proposed Features
-- Secure login with two roles — Admin and Doctor
+- Secure login with role-based access — Admin and Doctor
 - Patient registration and management
 - PDF lab report upload
 - AI-powered automatic extraction of lab values from PDF reports
@@ -55,11 +55,65 @@ A web-based patient management system for pathology labs that uses AI to automat
 
 ---
 
+## Project Setup Instructions
+
+### Prerequisites
+- Node.js v18+
+- Python 3.10+
+- Git
+
+### Frontend Setup
+```bash
+cd ai-emr/frontend
+npm install
+npm run dev
+```
+
+### Backend Setup
+```bash
+cd ai-emr/backend
+pip install -r requirements.txt
+cp .env.example .env
+uvicorn main:app --reload
+```
+
+
 ## Repository Structure
 ```
-cse4104-7a-t07-ai-emrsystem/
-├── ai-emr/            # Main project folder
+cse4104-7a-t07-ai-emr-system/
+├── ai-emr/
 │   ├── frontend/      # React.js frontend application
 │   └── backend/       # FastAPI Python backend
+├── documentation/     # SRS, System Design, API docs
+├── design/            # UI/UX wireframes and screenshots
 └── README.md
 ```
+
+---
+
+## Development Roadmap
+| Week | Phase | Status |
+|------|-------|--------|
+| Week 1 | Team Formation & Idea Selection | ✅ Done |
+| Week 2 | Project Proposal | ✅ Done |
+| Week 3 | SRS Preparation | ✅ Done |
+| Week 4 | System Design & Architecture | ✅ Done |
+| Week 5 | UI/UX Design & Development Planning | 🔄 In Progress |
+| Week 6 | Backend Development | ✅ Done  |
+| Week 7 | Frontend Development | ⏳ Upcoming |
+| Week 8 | AI Integration | ⏳ Upcoming |
+| Week 9 | Feature Completion | ⏳ Upcoming |
+| Week 10 | Testing & Debugging | ⏳ Upcoming |
+| Week 11 | Deployment | ⏳ Upcoming |
+| Week 12 | Documentation | ⏳ Upcoming |
+| Week 13 | Presentation Preparation | ⏳ Upcoming |
+| Week 14 | Final Presentation & Viva | ⏳ Upcoming |
+
+---
+
+## Task Distribution
+| Member | Responsibilities |
+|--------|----------------|
+| Fardin Galib | Team coordination, backend API development, deployment |
+| Md Ashikur Rahman | AI integration, database management, PDF extraction |
+| Dip Adnan | Frontend UI development, React components, API integration |
