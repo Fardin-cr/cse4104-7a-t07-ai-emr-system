@@ -284,4 +284,4 @@ def log_error(level: str, message: str, detail: str = None,
 
 
 if __name__ == "__main__":
-    init_db()# Database configuration - To be implemented
+    init_db()
