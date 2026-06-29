@@ -99,7 +99,7 @@ cse4104-7a-t07-ai-emr-system/
 | Week 3 | SRS Preparation | ✅ Done |
 | Week 4 | System Design & Architecture | ✅ Done |
 | Week 5 | UI/UX Design & Development Planning | ✅ Done |
-| Week 6 | Backend Development | ⏳ Upcoming  |
+| Week 6 | Backend Development | ✅ Done |
 | Week 7 | Frontend Development | ⏳ Upcoming |
 | Week 8 | AI Integration | ⏳ Upcoming |
 | Week 9 | Feature Completion | ⏳ Upcoming |
