@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# Node
+ai-emr/frontend/node_modules/
+ai-emr/frontend/build/
+
+# Backend generated files
+ai-emr/emr-backend/uploads/
+ai-emr/emr-backend/database/*.db
