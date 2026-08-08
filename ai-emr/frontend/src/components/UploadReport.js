@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useApp } from "../context/AppContext";
 
-const BASE = process.env.REACT_APP_API_URL || (window.location.hostname === "localhost" ? "http://localhost:8000" : "https://nashman-prod-production.up.railway.app");
+const BASE = process.env.REACT_APP_API_URL || (window.location.hostname === "localhost" ? "http://localhost:8000" : "https://cse4104-7a-t07-ai-emr-system-production.up.railway.app");
 
 const REPORT_TYPES = ["Hematology", "Hormone", "Immunology", "Biochemical"];
 

@@ -262,7 +262,7 @@ export default function Settings() {
                 ["Scanned PDFs",   "pypdfium2 + Claude Vision"],
                 ["API Docs",       window.location.hostname === "localhost"
                                      ? "http://localhost:8000/docs"
-                                     : "https://nashman-prod-production.up.railway.app/docs"],
+                                     : "https://cse4104-7a-t07-ai-emr-system-production.up.railway.app/docs"],
               ].map(([k, v]) => (
                 <div key={k} style={{ padding: "10px 0", borderBottom: "1px solid #F1F5F9" }}>
                   <div style={{ fontSize: 11, color: "#94A3B8", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.4px" }}>{k}</div>
