@@ -92,7 +92,6 @@ export default function Dashboard({ setActive, setSelectedPatient }) {
               <div className="empty-state"><p>No reports yet. Upload the first lab report.</p></div>
             ) : recent.map(r => {
               const abn = r.values.filter(v => v.abnormal).length;
-              const meta = TYPE_META[r.type] || TYPE_META.Other;
               return (
                 <div key={r.id} className="patient-row"
                   onClick={() => { setSelectedPatient(r.patientId); setActive("patients"); }}>

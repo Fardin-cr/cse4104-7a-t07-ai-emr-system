@@ -356,7 +356,8 @@ export default function PatientDetail({ patientId, onBack, initialRepId }) {
         }
       }
     }
-  }, [patient]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patient, initialRepId]);
   const [editMode,  setEditMode]  = useState(false);
   const [editVals,  setEditVals]  = useState([]);
   const [showUpload,setUpload]    = useState(false);
@@ -1036,7 +1037,6 @@ export default function PatientDetail({ patientId, onBack, initialRepId }) {
                           </td>
                           {[...filtered].sort((a, b) => new Date(a.date) - new Date(b.date)).map(r => {
                             const v = r.values.find(vv => vv.name === param);
-                            const s = STATUS_STYLE[v?.status] || STATUS_STYLE["Needs Review"];
                             return (
                               <td key={r.id} style={{ padding: "9px 12px", textAlign: "center" }}>
                                 {v ? (

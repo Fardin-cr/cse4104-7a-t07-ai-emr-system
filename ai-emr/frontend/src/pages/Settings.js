@@ -58,7 +58,8 @@ export default function Settings() {
         .then(data => { setAuditLog(data); setAuditLoading(false); })
         .catch(() => setAuditLoading(false));
     }
-  }, [tab]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, isAdmin]);
 
   const handleChange = async () => {
     setErr(""); setSucc("");
