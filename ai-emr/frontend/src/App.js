@@ -22,6 +22,7 @@ function Shell() {
   const [selectedPatient, setSelectedPatient] = useState(
     () => sessionStorage.getItem("emr_selected_patient") || null
   );
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (!user) return <Login />;
 
@@ -30,6 +31,7 @@ function Shell() {
   const handleSetActive = (page) => {
     if (!allowed.includes(page)) return;
     setActive(page);
+    setSidebarOpen(false);
     sessionStorage.setItem("emr_active_page", page);
     if (page !== "patients") {
       setSelectedPatient(null);
@@ -47,11 +49,16 @@ function Shell() {
 
   return (
     <div className="app-shell">
-      <Sidebar active={safeActive} setActive={handleSetActive} />
+      <Sidebar active={safeActive} setActive={handleSetActive} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="main-content">
 
         {/* Topbar */}
         <div className="topbar">
+          <button className="hamburger-btn" onClick={() => setSidebarOpen(o => !o)} aria-label="Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
           <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: "#0F172A", textTransform: "capitalize" }}>
               {safeActive === "reports" ? "Lab Register" : safeActive}
@@ -63,7 +70,7 @@ function Shell() {
               <span className="badge badge-green" style={{ fontSize: 10 }}>● Live</span>
             )}
           </div>
-          <div style={{ fontSize: 12, color: "#94A3B8" }}>
+          <div className="topbar-date" style={{ fontSize: 12, color: "#94A3B8" }}>
             {new Date().toLocaleDateString("en-GB", {
               weekday: "long", year: "numeric", month: "long", day: "numeric"
             })}

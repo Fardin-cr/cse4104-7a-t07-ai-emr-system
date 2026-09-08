@@ -58,13 +58,15 @@ const NashmanLogo = ({ size = 44 }) => (
   </svg>
 );
 
-export default function Sidebar({ active, setActive }) {
+export default function Sidebar({ active, setActive, isOpen, onClose }) {
   const { user, logout } = useApp();
   const rc = ROLE_CONFIG[user?.role] || {};
   const visibleNav = NAV.filter(n => n.roles.includes(user?.role));
 
   return (
-    <div className="sidebar">
+    <>
+      {isOpen && <div className="sidebar-overlay" onClick={onClose} />}
+    <div className={`sidebar${isOpen ? " sidebar-open" : ""}`}>
       <div className="sidebar-logo">
         <NashmanLogo size={36} />
         <div>
@@ -112,5 +114,6 @@ export default function Sidebar({ active, setActive }) {
         </button>
       </div>
     </div>
+    </>
   );
 }

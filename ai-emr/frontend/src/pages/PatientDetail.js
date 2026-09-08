@@ -1010,7 +1010,7 @@ export default function PatientDetail({ patientId, onBack, initialRepId }) {
                 <div style={{ fontWeight: 700, fontSize: 14 }}>Flowsheet — All Parameters</div>
                 <div style={{ fontSize: 12, color: "#94A3B8" }}>{filtered.length} reports · oldest → newest</div>
               </div>
-              <div style={{ overflowX: "auto" }}>
+              <div className="flowsheet-table-wrap" style={{ overflowX: "auto" }}>
                 <table className="flowsheet-table">
                   <thead>
                     <tr>

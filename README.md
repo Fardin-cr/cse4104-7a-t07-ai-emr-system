@@ -1,5 +1,7 @@
 # AI-Based Medical Report Analysis and Patient Management System
 
+> **Live Demo:** https://cse4104-7a-t07-ai-emr-system.pages.dev
+
 A web-based patient management system for pathology labs that uses AI to automatically extract test values from uploaded PDF lab reports and display them as visual indicators on a patient dashboard. Built to solve the real problem of manual lab report handling in small pathology labs.
 
 ---
@@ -142,8 +144,8 @@ uvicorn main:app --reload
 | Week 5 | UI/UX Design & Development Planning | ✅ Done |
 | Week 6 | Backend Development | ✅ Done |
 | Week 7 | Frontend Development | ✅ Done |
-| Week 8 | AI Integration | ✅ Done |
-| Week 9 | Feature Completion | ✅ Done |
+| Week 8 | AI Integration | 🔄 In Progress |
+| Week 9 | Feature Completion | ⏳ Upcoming |
 | Week 10 | Testing & Debugging | ⏳ Upcoming |
 | Week 11 | Deployment | ⏳ Upcoming |
 | Week 12 | Documentation | ⏳ Upcoming |
@@ -159,4 +161,3 @@ uvicorn main:app --reload
 | Fardin Galib | Team coordination, FastAPI backend, Railway deployment, R2 storage integration |
 | Md Ashikur Rahman | Claude AI integration, PDF/image extraction pipeline, Supabase database management |
 | Dip Adnan | React frontend, UI components, Cloudflare Pages deployment, API integration |
-```
