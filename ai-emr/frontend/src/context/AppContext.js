@@ -16,7 +16,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     const base = window.location.hostname === "localhost"
       ? "http://localhost:8000"
-      : (process.env.REACT_APP_API_URL || "http://localhost:8000");
+      : (process.env.REACT_APP_API_URL || "https://cse4104-7a-t07-ai-emr-system-production-1414.up.railway.app");
     fetch(base + "/health")
       .then(r => r.ok ? setBackendOk(true) : setBackendOk(false))
       .catch(() => setBackendOk(false));

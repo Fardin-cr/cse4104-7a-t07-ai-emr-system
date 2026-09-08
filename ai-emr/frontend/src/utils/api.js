@@ -2,7 +2,7 @@
 const BASE = process.env.REACT_APP_API_URL ||
   (window.location.hostname === "localhost"
     ? "http://localhost:8000"
-    : "http://localhost:8000");
+    : "https://cse4104-7a-t07-ai-emr-system-production-1414.up.railway.app");
 
 async function api(method, path, body = null, isFormData = false) {
   const opts = {
