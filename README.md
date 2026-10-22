@@ -144,13 +144,13 @@ uvicorn main:app --reload
 | Week 5 | UI/UX Design & Development Planning | ✅ Done |
 | Week 6 | Backend Development | ✅ Done |
 | Week 7 | Frontend Development | ✅ Done |
-| Week 8 | AI Integration | 🔄 In Progress |
-| Week 9 | Feature Completion | ⏳ Upcoming |
-| Week 10 | Testing & Debugging | ⏳ Upcoming |
-| Week 11 | Deployment | ⏳ Upcoming |
-| Week 12 | Documentation | ⏳ Upcoming |
-| Week 13 | Presentation Preparation | ⏳ Upcoming |
-| Week 14 | Final Presentation & Viva | ⏳ Upcoming |
+| Week 8 | AI Integration | ✅ Done |
+| Week 9 | Feature Completion | ✅ Done |
+| Week 10 | Testing & Debugging | ✅ Done |
+| Week 11 | Deployment | ✅ Done |
+| Week 12 | Documentation | ✅ Done |
+| Week 13 | Presentation Preparation | ✅ Done |
+| Week 14 | Final Presentation & Viva | ✅ Done |
 
 ---
 
