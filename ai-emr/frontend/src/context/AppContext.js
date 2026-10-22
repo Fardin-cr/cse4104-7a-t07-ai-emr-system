@@ -115,10 +115,11 @@ export function AppProvider({ children }) {
     }));
 
     return {
-      report:           normalized,
-      extractionError:  result.extraction_error,
-      extractionNote:   result.extraction_note,
-      extractionMethod: result.extraction_method,
+      report:               normalized,
+      extractionError:      result.extraction_error,
+      extractionNote:       result.extraction_note,
+      extractionMethod:     result.extraction_method,
+      extractedPatientName: result.extracted_patient_name || "",
     };
   };
 

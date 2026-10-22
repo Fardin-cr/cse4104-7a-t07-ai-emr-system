@@ -476,6 +476,185 @@ export default function PatientDetail({ patientId, onBack, initialRepId }) {
 
   const openPdf = (id) => window.open(getPdfUrl(id), "_blank");
 
+  const printReport = (report, p) => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      alert("Please allow popups to print the report.");
+      return;
+    }
+
+    const rowsHtml = (report.values || []).map(v => {
+      const isAbnormal = v.abnormal || (v.status && v.status !== "Normal");
+      const valColor = isAbnormal ? "#dc2626" : "#0f172a";
+      const badgeBg = v.status === "Normal" ? "#dcfce7" : v.status?.includes("Low") ? "#dbeafe" : "#fee2e2";
+      const badgeColor = v.status === "Normal" ? "#15803d" : v.status?.includes("Low") ? "#1d4ed8" : "#b91c1c";
+      const refRange = (v.refMin != null && v.refMax != null) ? `${v.refMin} – ${v.refMax}` : (v.refRange || "—");
+
+      return `
+        <tr>
+          <td style="padding: 9px 12px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">${v.name}</td>
+          <td style="padding: 9px 12px; border-bottom: 1px solid #e2e8f0; font-weight: 700; color: ${valColor};">${v.valueText || v.value || "—"}</td>
+          <td style="padding: 9px 12px; border-bottom: 1px solid #e2e8f0; color: #64748b;">${v.unit || "—"}</td>
+          <td style="padding: 9px 12px; border-bottom: 1px solid #e2e8f0; color: #475569;">${refRange}</td>
+          <td style="padding: 9px 12px; border-bottom: 1px solid #e2e8f0;">
+            <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; display: inline-block;">
+              ${v.status || (isAbnormal ? "Abnormal" : "Normal")}
+            </span>
+          </td>
+        </tr>
+      `;
+    }).join("");
+
+    const labName = report.lab || "Khulna Advanced Medical Institution";
+    const reportDate = report.date || new Date().toISOString().split("T")[0];
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${p.name} - ${report.type} Report (${reportDate})</title>
+          <meta charset="utf-8" />
+          <style>
+            @page { size: A4 portrait; margin: 15mm; }
+            * { box-sizing: border-box; }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+              color: #0f172a;
+              margin: 0;
+              padding: 24px;
+              background: #fff;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .header {
+              text-align: center;
+              border-bottom: 2px solid #0f172a;
+              padding-bottom: 12px;
+              margin-bottom: 18px;
+            }
+            .inst-title {
+              font-size: 20px;
+              font-weight: 800;
+              letter-spacing: 0.5px;
+              text-transform: uppercase;
+              color: #0f172a;
+            }
+            .inst-sub {
+              font-size: 11px;
+              color: #64748b;
+              letter-spacing: 1.5px;
+              text-transform: uppercase;
+              margin-top: 3px;
+            }
+            .patient-box {
+              background: #f8fafc;
+              border: 1px solid #e2e8f0;
+              border-radius: 8px;
+              padding: 12px 18px;
+              margin-bottom: 18px;
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 8px 24px;
+              font-size: 12.5px;
+            }
+            .field { display: flex; justify-content: space-between; }
+            .field-label { color: #64748b; font-weight: 600; }
+            .field-val { color: #0f172a; font-weight: 700; }
+            .report-heading {
+              font-size: 13px;
+              font-weight: 800;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              color: #1e40af;
+              margin: 16px 0 8px;
+              padding-left: 8px;
+              border-left: 4px solid #2563eb;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 12px;
+              margin-top: 8px;
+            }
+            th {
+              background: #f1f5f9;
+              color: #334155;
+              font-weight: 700;
+              text-align: left;
+              padding: 9px 12px;
+              border-bottom: 2px solid #cbd5e1;
+            }
+            .footer {
+              margin-top: 48px;
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-end;
+              font-size: 11px;
+              color: #64748b;
+              border-top: 1px solid #e2e8f0;
+              padding-top: 14px;
+            }
+            .sig { text-align: center; }
+            .sig-line { width: 160px; border-top: 1px dashed #94a3b8; margin-bottom: 6px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="inst-title">${labName}</div>
+            <div class="inst-sub">Pathology &amp; Regenerative Medicine Laboratory</div>
+          </div>
+
+          <div class="patient-box">
+            <div class="field"><span class="field-label">Patient Name:</span><span class="field-val">${p.name}</span></div>
+            <div class="field"><span class="field-label">Report Date:</span><span class="field-val">${reportDate}</span></div>
+            <div class="field"><span class="field-label">EMR ID:</span><span class="field-val">${p.id}</span></div>
+            <div class="field"><span class="field-label">Lab ID:</span><span class="field-val">${report.labId || "—"}</span></div>
+            <div class="field"><span class="field-label">Age / Sex:</span><span class="field-val">${p.age ? p.age + "Y" : "—"} / ${p.sex || "—"}</span></div>
+            <div class="field"><span class="field-label">Specimen:</span><span class="field-val">Blood</span></div>
+            <div class="field"><span class="field-label">Blood Group:</span><span class="field-val">${p.blood || "—"}</span></div>
+            <div class="field"><span class="field-label">Referred By:</span><span class="field-val">${p.doctor || "—"}</span></div>
+          </div>
+
+          <div class="report-heading">${report.type} Examination</div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Test Parameter</th>
+                <th>Result</th>
+                <th>Unit</th>
+                <th>Reference Range</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+
+          <div class="footer">
+            <div>
+              Generated on ${new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })} | EMR Verified Record
+              ${report.editedBy ? `<br><em>Values reviewed by: ${report.editedBy}</em>` : ""}
+            </div>
+            <div class="sig">
+              <div class="sig-line"></div>
+              <div>Medical Technologist / Pathologist</div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 300);
+  };
+
   // ── Range bar ──────────────────────────────────────────────────────────────
   const RangeBar = () => (
     <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14, flexWrap: "wrap" }}>
@@ -783,12 +962,14 @@ export default function PatientDetail({ patientId, onBack, initialRepId }) {
           {/* Left — PDF preview */}
           <div className="card">
             <div className="card-header">
-              <div style={{ fontWeight: 700, fontSize: 14 }}>Original Report</div>
+              <div style={{ fontWeight: 700, fontSize: 14 }}>Report Preview</div>
               <div style={{ display: "flex", gap: 6 }}>
                 <button className="btn btn-secondary btn-sm" onClick={() => openPdf(activeReport.id)}>
-                  {['.jpg','.jpeg','.png','.bmp','.tiff','.webp'].some(ext => activeReport.pdfName?.toLowerCase().endsWith(ext)) ? 'Open Image' : 'Open PDF'}
+                  {['.jpg','.jpeg','.png','.bmp','.tiff','.webp'].some(ext => activeReport.pdfName?.toLowerCase().endsWith(ext)) ? 'Uploaded Image' : 'Uploaded PDF'}
                 </button>
-                <button className="btn btn-ghost btn-sm" onClick={() => openPdf(activeReport.id)}>Print</button>
+                <button className="btn btn-primary btn-sm" onClick={() => printReport(activeReport, patient)}>
+                  Print Report
+                </button>
               </div>
             </div>
             <div className="card-body" style={{ maxHeight: 520, overflowY: "auto" }}>

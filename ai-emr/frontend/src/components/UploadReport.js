@@ -83,7 +83,17 @@ export default function UploadReport({ patient, onClose, onDone }) {
       });
       setExtracted(result.report);
       setEditVals(result.report.values.map(v => ({ ...v })));
-      if (result.extractionError) setError(`Note: ${result.extractionError}`);
+      if (result.extractedPatientName && patient?.name) {
+        const docName = result.extractedPatientName.trim().toLowerCase();
+        const curName = patient.name.trim().toLowerCase();
+        if (!docName.includes(curName) && !curName.includes(docName)) {
+          setError(`⚠️ Name Notice: The uploaded report indicates patient name "${result.extractedPatientName}", but this profile is for "${patient.name}".`);
+        } else if (result.extractionError) {
+          setError(`Note: ${result.extractionError}`);
+        }
+      } else if (result.extractionError) {
+        setError(`Note: ${result.extractionError}`);
+      }
       setStep(2);
     } catch (e) {
       setError(e.message || "Upload failed");

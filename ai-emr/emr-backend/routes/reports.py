@@ -157,6 +157,7 @@ async def upload_report(
     report["extraction_method"] = extracted.get("_method", "")
     report["model_used"]        = extracted.get("_model", "")
     report["escalated"]         = extracted.get("_escalated", False)
+    report["extracted_patient_name"] = extracted.get("patient_name", "")
     db.close()
     return report
 
