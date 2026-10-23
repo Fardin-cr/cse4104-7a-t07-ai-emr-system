@@ -66,9 +66,9 @@ async def request_logger(request: Request, call_next):
 def startup():
     init_db()
     os.makedirs(os.path.join(os.path.dirname(__file__), "uploads"), exist_ok=True)
-    print("✅ Database initialized")
-    print("🚀 AI Medical Report Analysis API running")
-    print("📍 Docs available at http://localhost:8000/docs")
+    print("[OK] Database initialized")
+    print("[START] AI Medical Report Analysis API running")
+    print("[INFO] Docs available at http://localhost:8000/docs")
 
 
 app.include_router(auth.router)

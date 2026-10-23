@@ -1,8 +1,9 @@
 import re
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, validator
 from typing import Optional
 from database import get_db, log_action
+from utils.security import get_current_user, require_role
 import datetime, uuid
 
 router = APIRouter(prefix="/patients", tags=["patients"])
@@ -105,7 +106,10 @@ def get_patient_full(db, patient_id: str) -> dict:
     return p
 
 @router.get("")
-def list_patients(search: str = ""):
+def list_patients(
+    search: str = "",
+    current_user: dict = Depends(get_current_user)
+):
     db = get_db()
     if search:
         rows = db.execute(
@@ -136,7 +140,10 @@ def list_patients(search: str = ""):
     return result
 
 @router.get("/{patient_id}")
-def get_patient(patient_id: str):
+def get_patient(
+    patient_id: str,
+    current_user: dict = Depends(get_current_user)
+):
     db = get_db()
     p = get_patient_full(db, patient_id)
     db.close()
@@ -145,7 +152,10 @@ def get_patient(patient_id: str):
     return p
 
 @router.post("")
-def create_patient(data: PatientCreate):
+def create_patient(
+    data: PatientCreate,
+    current_user: dict = Depends(get_current_user)
+):
     db = get_db()
     emr_id = generate_emr_id(db)
     now = datetime.date.today().isoformat()
@@ -155,14 +165,19 @@ def create_patient(data: PatientCreate):
          data.phone, data.address, data.doctor,
          data.emergency_contact, data.notes, now)
     )
-    log_action(db, "patient_registered", detail=f"Registered patient {emr_id}: {data.name}")
+    log_action(db, "patient_registered", role=current_user["role"], username=current_user["username"],
+               detail=f"Registered patient {emr_id}: {data.name}")
     db.commit()
     p = get_patient_full(db, emr_id)
     db.close()
     return p
 
 @router.put("/{patient_id}")
-def update_patient(patient_id: str, data: PatientUpdate):
+def update_patient(
+    patient_id: str,
+    data: PatientUpdate,
+    current_user: dict = Depends(get_current_user)
+):
     db = get_db()
     p = db.execute("SELECT * FROM patients WHERE id=?", (patient_id,)).fetchone()
     if not p:
@@ -172,21 +187,26 @@ def update_patient(patient_id: str, data: PatientUpdate):
     if updates:
         sets = ", ".join(f"{k}=?" for k in updates)
         db.execute(f"UPDATE patients SET {sets} WHERE id=?", (*updates.values(), patient_id))
-        log_action(db, "patient_updated", detail=f"Updated patient {patient_id}")
+        log_action(db, "patient_updated", role=current_user["role"], username=current_user["username"],
+                   detail=f"Updated patient {patient_id}")
         db.commit()
     p = get_patient_full(db, patient_id)
     db.close()
     return p
 
 @router.delete("/{patient_id}")
-def delete_patient(patient_id: str):
+def delete_patient(
+    patient_id: str,
+    current_user: dict = Depends(require_role(["admin", "doctor"]))
+):
     db = get_db()
     p = db.execute("SELECT name FROM patients WHERE id=?", (patient_id,)).fetchone()
     if not p:
         db.close()
         raise HTTPException(status_code=404, detail="Patient not found")
     db.execute("DELETE FROM patients WHERE id=?", (patient_id,))
-    log_action(db, "patient_deleted", detail=f"Deleted patient {patient_id}: {p['name']}")
+    log_action(db, "patient_deleted", role=current_user["role"], username=current_user["username"],
+               detail=f"Deleted patient {patient_id}: {p['name']}")
     db.commit()
     db.close()
     return {"success": True, "message": f"Patient {patient_id} deleted"}

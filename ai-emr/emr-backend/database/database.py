@@ -8,6 +8,7 @@ import os
 import hashlib
 import secrets
 import datetime
+import bcrypt
 import uuid as _uuid
 
 DATABASE_URL = os.getenv("DATABASE_URL", "")
@@ -18,15 +19,24 @@ SQLITE_PATH = os.path.join(os.path.dirname(__file__), "meditrack.db")
 
 # ── Password utilities ────────────────────────────────────────────────────────
 def hash_password(password: str) -> str:
-    salt = secrets.token_hex(16)
-    h    = hashlib.sha256((salt + password).encode()).hexdigest()
-    return f"{salt}:{h}"
+    """Hashes a password using Bcrypt with 12 salt rounds (max 72 bytes)."""
+    pwd_bytes = password.encode("utf-8")[:72]
+    salt = bcrypt.gensalt(rounds=12)
+    return bcrypt.hashpw(pwd_bytes, salt).decode("utf-8")
 
 def verify_password(password: str, stored: str) -> bool:
+    """Verifies a password against Bcrypt, with backwards compatibility for legacy hashes."""
     try:
+        if not stored:
+            return False
+        # Bcrypt format ($2b$, $2a$, $2y$)
+        if stored.startswith("$2b$") or stored.startswith("$2a$") or stored.startswith("$2y$"):
+            return bcrypt.checkpw(password.encode("utf-8")[:72], stored.strip().encode("utf-8"))
+        # Legacy Salted SHA-256 format (salt:hash)
         if ":" in stored:
             salt, h = stored.split(":", 1)
             return hashlib.sha256((salt + password).encode()).hexdigest() == h
+        # Legacy plain-text fallback
         return password == stored
     except Exception:
         return False
@@ -226,7 +236,7 @@ def _seed(db):
         if not row:
             db.execute("INSERT INTO credentials (role,username,password) VALUES (?,?,?)",
                        (role, uname, hash_password(pwd)))
-        elif ":" not in (row.get("password") or ""):
+        elif ":" not in (row.get("password") or "") and not (row.get("password") or "").startswith("$2b$"):
             db.execute("UPDATE credentials SET password=? WHERE role=?",
                        (hash_password(row["password"]), role))
 
@@ -251,10 +261,10 @@ def init_db():
         _seed(db)
         db.commit()
         mode = "PostgreSQL (Supabase)" if USE_POSTGRES else "SQLite (local)"
-        print(f"✅ Database initialized — {mode}")
+        print(f"[OK] Database initialized — {mode}")
     except Exception as e:
         db.rollback()
-        print(f"❌ Database init error: {e}")
+        print(f"[ERROR] Database init error: {e}")
         raise
     finally:
         db.close()

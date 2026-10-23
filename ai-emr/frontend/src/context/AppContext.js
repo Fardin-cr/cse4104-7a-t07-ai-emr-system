@@ -39,6 +39,16 @@ export function AppProvider({ children }) {
     if (user && backendOk) loadPatients();
   }, [user, backendOk, loadPatients]);
 
+  // Handle global 401 unauthorized events
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      setUser(null);
+      setPatients([]);
+    };
+    window.addEventListener("auth:unauthorized", handleUnauthorized);
+    return () => window.removeEventListener("auth:unauthorized", handleUnauthorized);
+  }, []);
+
   // AUTH
   const login = async (username, password) => {
     try {
@@ -46,6 +56,9 @@ export function AppProvider({ children }) {
       const u = { role: res.role, username: res.username };
       setUser(u);
       localStorage.setItem("emr_user", JSON.stringify(u));
+      if (res.token || res.access_token) {
+        localStorage.setItem("emr_token", res.token || res.access_token);
+      }
       return { success: true };
     } catch (e) {
       return { success: false, error: e.message };
@@ -56,6 +69,7 @@ export function AppProvider({ children }) {
     setUser(null);
     setPatients([]);
     localStorage.removeItem("emr_user");
+    localStorage.removeItem("emr_token");
     sessionStorage.clear();
   };
 

@@ -3,11 +3,12 @@ import os
 import datetime
 import tempfile
 import uuid
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Depends
 from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, validator
 from typing import Optional, List
 from database import get_db, log_action
+from utils.security import get_current_user, require_role
 from utils.extractor import extract_from_pdf, extract_from_image_file
 from utils.storage import upload_report_file, get_report_file_path, delete_file, REPORTS_BUCKET
 
@@ -41,7 +42,7 @@ class EditValuesRequest(BaseModel):
 
 
 @router.get("/check-lab-id")
-def check_lab_id(lab_id: str = ""):
+def check_lab_id(lab_id: str = "", current_user: dict = Depends(get_current_user)):
     """Real-time lab ID uniqueness check for frontend validation."""
     if not lab_id.strip():
         return {"exists": False}
@@ -69,7 +70,8 @@ async def upload_report(
     time:        str = Form(""),
     patient_sex: str = Form("Female"),
     patient_age: str = Form(""),
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    current_user: dict = Depends(get_current_user)
 ):
     # Read file into memory
     file_bytes = await file.read()
@@ -163,7 +165,7 @@ async def upload_report(
 
 
 @router.get("/{report_id}")
-def get_report(report_id: str):
+def get_report(report_id: str, current_user: dict = Depends(get_current_user)):
     db = get_db()
     r = db.execute("SELECT * FROM reports WHERE id=?", (report_id,)).fetchone()
     if not r: raise HTTPException(404, "Report not found")
@@ -175,7 +177,7 @@ def get_report(report_id: str):
 
 
 @router.put("/{report_id}/values")
-def edit_report_values(report_id: str, req: EditValuesRequest):
+def edit_report_values(report_id: str, req: EditValuesRequest, current_user: dict = Depends(get_current_user)):
     if req.editor_role not in VALID_EDITOR_ROLES:
         raise HTTPException(403, "Only doctors, technicians and admins can edit values")
 
@@ -215,7 +217,7 @@ def edit_report_values(report_id: str, req: EditValuesRequest):
 
 
 @router.delete("/{report_id}")
-def delete_report(report_id: str):
+def delete_report(report_id: str, current_user: dict = Depends(require_role(["admin", "doctor"]))):
     db = get_db()
     r  = db.execute("SELECT * FROM reports WHERE id=?", (report_id,)).fetchone()
     if not r: db.close(); raise HTTPException(404, "Report not found")
@@ -232,7 +234,7 @@ def delete_report(report_id: str):
 
 
 @router.get("/{report_id}/pdf")
-def get_pdf(report_id: str):
+def get_pdf(report_id: str, current_user: dict = Depends(get_current_user)):
     db = get_db()
     r  = db.execute("SELECT * FROM reports WHERE id=?", (report_id,)).fetchone()
     db.close()

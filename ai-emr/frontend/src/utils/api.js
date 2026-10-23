@@ -5,14 +5,25 @@ const BASE = process.env.REACT_APP_API_URL ||
     : "https://ai-emr-backend-6qjl.onrender.com");
 
 async function api(method, path, body = null, isFormData = false) {
+  const token = localStorage.getItem("emr_token");
+  const headers = isFormData ? {} : { "Content-Type": "application/json" };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
   const opts = {
     method,
-    headers: isFormData ? {} : { "Content-Type": "application/json" },
+    headers,
     body: body ? (isFormData ? body : JSON.stringify(body)) : null,
     redirect: "follow",
   };
   const res = await fetch(`${BASE}${path}`, opts);
   if (!res.ok) {
+    if (res.status === 401 && !path.includes("/auth/login")) {
+      // Token expired or invalid — clear session and notify app
+      localStorage.removeItem("emr_token");
+      localStorage.removeItem("emr_user");
+      window.dispatchEvent(new Event("auth:unauthorized"));
+    }
     const err = await res.json().catch(() => ({ detail: res.statusText }));
     const detail = Array.isArray(err.detail)
       ? err.detail.map(e => e.msg || JSON.stringify(e)).join("; ")
@@ -47,7 +58,10 @@ export const reportAPI = {
   get:    (id)                     => api("GET",    `/reports/${id}`),
   edit:   (id, values, editorRole) => api("PUT",    `/reports/${id}/values`, { values, editor_role: editorRole }),
   delete: (id)                     => api("DELETE", `/reports/${id}`),
-  pdfUrl: (id)                     => `${BASE}/reports/${id}/pdf`,
+  pdfUrl: (id) => {
+    const token = localStorage.getItem("emr_token");
+    return `${BASE}/reports/${id}/pdf${token ? `?token=${encodeURIComponent(token)}` : ""}`;
+  },
 };
 
 // NORMALIZERS
