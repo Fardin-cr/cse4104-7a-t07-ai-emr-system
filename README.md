@@ -47,7 +47,6 @@ A web-based patient management system for pathology labs that uses AI to automat
 - Abnormal flag detection — dashboard shows total abnormal values across all patients
 - Patient history tracking — grouped by report category (Hematology, Hormone, etc.)
 - Trend analysis across serial reports
-- Excel export of patient report data
 - Cloud file storage via Cloudflare R2 with Supabase Storage fallback
 
 ---

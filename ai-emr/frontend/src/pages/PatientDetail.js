@@ -322,7 +322,7 @@ function ResultHistory({ data, unit, color }) {
 
 // ── Main PatientDetail Component ─────────────────────────────────────────────
 export default function PatientDetail({ patientId, onBack, initialRepId }) {
-  const { patients, loading, user, editReport, deleteReport, exportToExcel, getPdfUrl, refreshPatient } = useApp();
+  const { patients, loading, user, editReport, deleteReport, getPdfUrl, refreshPatient } = useApp();
 
   const patient = useMemo(() => patients.find(p => p.id === patientId), [patients, patientId]);
 
@@ -751,9 +751,6 @@ export default function PatientDetail({ patientId, onBack, initialRepId }) {
                 + Upload Report
               </button>
             )}
-            <button className="btn btn-secondary btn-sm" onClick={() => exportToExcel(patient)}>
-              Export Excel
-            </button>
             {patient.phone && (
               <div style={{ fontSize: 12, color: "#64748B", display: "flex", alignItems: "center" }}>
                 {patient.phone}
